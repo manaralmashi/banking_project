@@ -5,13 +5,14 @@ class TestCustomer(unittest.TestCase):
     # [1]. open - (if i want run something before test)
     def setUp(self):
         # print('-------- setUp --------') # for testing
-        self.customer1 = Customer('7654', 'Manar', 'Saad', 'Mnr@1')
-        self.customer2 = Customer('7655', 'Manar', 'Saad', 'manar@12345')
-        self.customer3 = Customer('7656', 'Manar', 'Saad', 'Manar@saad')
-        self.customer4 = Customer('7657', 'Manar', 'Saad', 'Manar12345')
-        self.customer5 = Customer('7658', 'Manar', 'Saad', 'Manar Saad')
-        self.customer6 = Customer('7659', 'Manar', 'Saad', 'Manar@12345')
-
+        # objects for testing
+        self.customer1 = Customer('1', 'Manar', 'Saad', 'Mnr@1')
+        self.customer2 = Customer('2', 'amal', 'ali', 'amal@12345')
+        self.customer3 = Customer('3', 'Fatima', 'Noor', 'Fatima@noor')
+        self.customer4 = Customer('4', 'Ahmed', 'Talal', 'Ahmed12345')
+        self.customer5 = Customer('5', 'Jana', 'khaled', 'Jana khaled')
+        self.customer6 = Customer('6', 'Salma', 'Yosuf', 'Salma@12345')
+        
     # [2]. testing methods
     def test_is_valid_password(self):
         # print('-------- on test_is_valid_password()--------') # for testing
@@ -22,6 +23,11 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(self.customer5.is_valid_password(), False)  # "⚠️ Password cannot contain spaces!"
         self.assertEqual(self.customer6.is_valid_password(), True)   # Password is valid :)
 
+    def test_get_fullname(self):
+        self.assertEqual(self.customer1.get_fullname(), "Manar Saad")
+        self.assertEqual(self.customer2.get_fullname(), "amal ali")
+        self.assertEqual(self.customer3.get_fullname(), "Fatima Noor")
+        
     # [3]. close - (if i want run something after test)
     def tearDown(self):
         pass
