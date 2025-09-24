@@ -19,6 +19,42 @@ class Customer:
     def is_equal_password(self, input_password):
         return self.password == input_password
     
+    def is_valid_password(self):
+        password = self.password
+        
+        # Validates a password with criteria:
+        # length 8-15 char
+        if not (8 <= len(password) <= 15):
+            print("⚠️ Password must be between 8 and 15 characters long!")
+            return False
+
+        # At least one uppercase letter
+        if not re.search(r"[A-Z]", password):
+            print("⚠️ Password must contain at least one uppercase letter!")
+            return False
+
+        # At least one lowercase letter
+        if not re.search(r"[a-z]", password):
+            print("⚠️ Password must contain at least one lowercase letter!")
+            return False
+
+        # At least one digit
+        if not re.search(r"\d", password):
+            print("⚠️ Password must contain at least one digit!")
+            return False
+
+        # At least one special char from !@#$%^&*()
+        if not re.search(r"[!@#$%^&*()]", password):
+            print("⚠️ Password must contain at least one special character (!@#$%^&*())!")
+            return False
+
+        # No spaces
+        if re.search(r"\s", password):
+            print("⚠️ Password cannot contain spaces!")
+            return False
+
+        return True # password is valid :)
+    
     def has_checking_account(self):
         return self.balance_checking is not None
     
