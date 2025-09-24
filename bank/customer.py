@@ -24,3 +24,35 @@ class Customer:
     
     def has_savings_account(self):
         return self.balance_savings is not None
+    
+    def to_customer_list(self):
+        return [
+            self.account_id, 
+            self.first_name, 
+            self.last_name, 
+            self.password, 
+            str(self.balance_checking) if self.balance_checking is not None else "",
+            str(self.balance_savings) if self.balance_savings is not None else "",
+            str(self.is_active), 
+            str(self.overdraft_count)
+        ]
+    
+    @classmethod
+    def to_customer_object(customer_list):
+        
+        checking = customer_list[4] if customer_list[4] not in [None, ""] else None
+        savings = customer_list[5] if customer_list[5] not in [None, ""] else None
+        
+        return Customer(
+            customer_list[0],  # id
+            customer_list[1],  # first name
+            customer_list[2],  # last name
+            customer_list[3],  # password
+            checking,          # balance checking
+            savings,           # balance savings
+            customer_list[6],  # active or not?
+            customer_list[7]   # overdraft count
+        
+            # customer_list[6] if len(customer_list) > 6 else True,
+            # customer_list[7] if len(customer_list) > 7 else 0
+        )
