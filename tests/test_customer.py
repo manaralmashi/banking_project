@@ -28,6 +28,12 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(self.customer2.get_fullname(), "amal ali")
         self.assertEqual(self.customer3.get_fullname(), "Fatima Noor")
         
+    def test_is_equal_password(self):
+        self.assertTrue(Customer.is_equal_password("Hala@1234", "Hala@1234"))
+        self.assertTrue(Customer.is_equal_password("", ""))
+        self.assertFalse(Customer.is_equal_password("Manar@123", "Maanr@123"))
+        self.assertFalse(Customer.is_equal_password("Saad$12345", "saad$12345"))
+        
     # [3]. close - (if i want run something after test)
     def tearDown(self):
         pass
