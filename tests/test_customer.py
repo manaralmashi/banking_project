@@ -51,6 +51,12 @@ class TestCustomer(unittest.TestCase):
         self.assertTrue(self.customer_with_both.has_savings_account()) # True
         self.assertFalse(self.customer_with_none.has_savings_account()) # False
         
+    def test_to_customer_list(self):
+        pass
+
+    def test_to_customer_object(self):
+        pass
+        
     # [3]. close - (if i want run something after test)
     def tearDown(self):
         pass
