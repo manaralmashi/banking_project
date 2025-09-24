@@ -25,32 +25,32 @@ class Customer:
         # Validates a password with criteria:
         # length 8-15 char
         if not (8 <= len(password) <= 15):
-            print("⚠️ Password must be between 8 and 15 characters long!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Must be between 8 and 15 characters long!\n")
             return False
 
         # At least one uppercase letter
         if not re.search(r"[A-Z]", password):
-            print("⚠️ Password must contain at least one uppercase letter!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Must contain at least one uppercase letter!\n")
             return False
 
         # At least one lowercase letter
         if not re.search(r"[a-z]", password):
-            print("⚠️ Password must contain at least one lowercase letter!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Must contain at least one lowercase letter!\n")
             return False
 
         # At least one digit
         if not re.search(r"\d", password):
-            print("⚠️ Password must contain at least one digit!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Must contain at least one digit!\n")
             return False
 
         # At least one special char from !@#$%^&*()
         if not re.search(r"[!@#$%^&*()]", password):
-            print("⚠️ Password must contain at least one special character (!@#$%^&*())!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Must contain at least one special character (!@#$%^&*())!\n")
             return False
 
         # No spaces
         if re.search(r"\s", password):
-            print("⚠️ Password cannot contain spaces!")
+            print("⚠️ \033[1mPassword is NOT valid!⚠️ \033[0m, Cannot contain spaces!\n")
             return False
 
         return True # password is valid :)
@@ -73,7 +73,6 @@ class Customer:
             str(self.overdraft_count)
         ]
     
-    @classmethod
     def to_customer_object(customer_list):
         
         checking = customer_list[4] if customer_list[4] not in [None, ""] else None
