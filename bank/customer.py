@@ -16,8 +16,9 @@ class Customer:
     def get_fullname(self):
         return f"{self.first_name} {self.last_name}"
     
-    def is_equal_password(self, input_password):
-        return self.password == input_password
+    @staticmethod
+    def is_equal_password(password, confirm_password):
+        return password == confirm_password
     
     def is_valid_password(self):
         password = self.password
