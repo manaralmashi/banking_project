@@ -41,8 +41,6 @@ while True:
                         else:
                             print("⚠️ Passwords DON'T match! Try again..")
                     break
-                else:
-                    print('⚠️ \033[1mPassword is NOT valid!\033[0m Try again.')
     
         # [2] Log In
         case '2':
