@@ -8,13 +8,13 @@ def search_customer_by_id(account_id, customers):
     return None
 
 # to add and update entire csv file
-def save_customers_to_csv(customers, filename = "bank.csv"):
+def save_customers_to_csv(customers_info_list, filename = "bank.csv"):
     headers = ['account_id', 'first_name', 'last_name', 'password', 'balance_checking', 'balance_savings', 'is_active', 'overdraft_count']
     
     with open(filename, 'w', newline = '') as file:
         writer = csv.writer(file)
         writer.writerow(headers)
-        writer.writerows(customers)
+        writer.writerows(customers_info_list)
 
 # to add only new row
 def add_customer_to_csv(customer_info, filename = "bank.csv"):
