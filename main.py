@@ -19,7 +19,30 @@ while True:
     match user_choice:
         # [1] Add New Customer
         case '1':
-            pass
+            print('\n -----------(👤 Create New Customer 👤)-----------')
+            
+            # --[ 1. Ask the FullName ]--
+            first_name = input('- Enter First Name: ').strip().capitalize()
+            last_name = input('- Enter Last Name: ').strip().capitalize()
+            
+            # --[ 2. Ask the Password ]--
+            while True:
+                # password validation
+                password = input('- Enter Password (8-15 chars, with upper/lower/digit/special): ')
+                temp_customer = Customer('temp', 'temp', 'temp', password)
+                
+                is_valid_password = temp_customer.is_valid_password()
+                if is_valid_password:
+                    # -[ 3. Ask for Confirm password ]-
+                    while True:
+                        confirm_password = input('- Confirm Password: ')
+                        if Customer.is_equal_password(password, confirm_password):
+                            break
+                        else:
+                            print("⚠️ Passwords DON'T match! Try again..")
+                    break
+                else:
+                    print('⚠️ \033[1mPassword is NOT valid!\033[0m Try again.')
     
         # [2] Log In
         case '2':
@@ -34,4 +57,4 @@ while True:
         
         # [_] Default case
         case _:
-            pass
+            print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
