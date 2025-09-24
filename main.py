@@ -48,6 +48,45 @@ while True:
                         else:
                             print("⚠️ Passwords DON'T match! Try again..")
                     break
+                
+            # --[ 4. Select Account Type ]--
+            print('\n- Select Account Type:')
+            print('[1] Just Open a \033[1mChecking\033[0m Account')
+            print('[2] Just Open a \033[1mSavings\033[0m Account') 
+            print('[3] Open Both a \033[1mSavings\033[0m and a \033[1mChecking\033[0m Account')
+            
+            while True:
+                account_type_choice = input('Enter Account Type you want to open (1-3): ')
+                # validate choice
+                if account_type_choice in ['1', '2', '3']:
+                    break
+                print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
+            
+            # --[ 5. Initial Deposit to an account (Checking/Savings) ]--
+            try:
+                initial_deposit_checking = None
+                initial_deposit_savings = None
+                
+                if account_type_choice == '1':
+                    initial_deposit_checking = float(input('- Enter \033[1mInitial Deposit Amount\033[0m for Checking Account: $'))
+                elif account_type_choice == '2':
+                    initial_deposit_savings = float(input('- Enter \033[1mInitial Deposit Amount\033[0m for Savings Account: $'))
+                elif account_type_choice == '3':
+                    initial_deposit_checking = float(input('- Enter \033[1mInitial Deposit Amount\033[0m for Checking Account: $'))
+                    initial_deposit_savings = float(input('- Enter \033[1mInitial Deposit Amount\033[0m for Savings Account: $'))
+                
+                if initial_deposit_checking is not None and initial_deposit_checking < 0:
+                    print('⚠️ Initial Deposit Amount for Checking Account cannot be Negative!')
+                elif initial_deposit_savings is not None and initial_deposit_savings < 0:
+                    print('⚠️ Initial Deposit Amount for Savings Account cannot be Negative!')
+                    
+            except ValueError:
+                print('⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+            
+            # Create Customer Account
+            new_account_id = bank_management.add_new_customer(first_name, last_name, password, account_type_choice, initial_deposit_checking, initial_deposit_savings)
+            print(f'✅ Customer Account Create Successfully! You can Login with Your ID: {new_account_id}')
+
     
         # [2] Log In
         case '2':
