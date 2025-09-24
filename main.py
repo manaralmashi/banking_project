@@ -22,8 +22,15 @@ while True:
             print('\n -----------(👤 Create New Customer 👤)-----------')
             
             # --[ 1. Ask the FullName ]--
-            first_name = input('- Enter First Name: ').strip().capitalize()
-            last_name = input('- Enter Last Name: ').strip().capitalize()
+            while True:
+                first_name = input('- Enter First Name: ').strip().capitalize()
+                last_name = input('- Enter Last Name: ').strip().capitalize()
+                
+                # name validation
+                if first_name.replace(" ", "").isalpha() and last_name.replace(" ", "").isalpha():
+                    break
+                else:
+                    print('⚠️ Sorry, you have to write your name with only letters!')
             
             # --[ 2. Ask the Password ]--
             while True:
