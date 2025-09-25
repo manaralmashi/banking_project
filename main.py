@@ -1,3 +1,4 @@
+import sys      # needed for sys.exit()
 import csv_bank
 
 from bank.bank_management import BankManagement
@@ -12,11 +13,11 @@ while True:
     print(' \033[1m-----------------------------------------------------------\033[0m')
     print('[1] Add New Customer')
     print('[2] Log In')
-    print('[3] Exit')
+    print('[0] Exit')
     print(' -------------------------------------------------')
-    user_choice = input('Enter your choice (1-3): ')
+    user_choice_main = input('Enter your choice (0-2): ')
     
-    match user_choice:
+    match user_choice_main:
         # [1] Add New Customer
         case '1':
             print('\n -----------(👤 Create New Customer 👤)-----------')
@@ -108,11 +109,11 @@ while True:
                     print('\n⚠️ Invalid account ID or password!\n!!! Don\'t have an account? Return to the main menu by typing "back or b" !!!\n')
 
         # [3] Exit
-        case '3':
+        case '0':
             print('\n \033[1m-----------------------------------------------------------\033[0m')
             print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
             print(' \033[1m-----------------------------------------------------------\033[0m')
-            break
+            sys.exit()
         
         # [_] Default case
         case _:
