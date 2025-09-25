@@ -90,8 +90,23 @@ while True:
     
         # [2] Log In
         case '2':
-            pass
-        
+            print('\n\n -----------(🚪       Log In       🚪)-----------\n')
+            
+            while True:
+                # --[ 1. Ask the account ID & password ]--
+                account_id = input('- Enter your Account ID: ').strip()
+                password = input('- Enter your Password: ').strip()
+                
+                if account_id.lower() in ('b', 'back') or password.lower() in ('b', 'back'):
+                    break # back to the main menu
+
+                customer = bank_management.login(account_id, password)
+                if customer:
+                    print(f'------🌟 Welcome back {customer.get_fullname()}! 🌟------')
+                    break
+                else:
+                    print('\n⚠️ Invalid account ID or password!\n!!! Don\'t have an account? Return to the main menu by typing "back or b" !!!\n')
+
         # [3] Exit
         case '3':
             print('\n \033[1m-----------------------------------------------------------\033[0m')
