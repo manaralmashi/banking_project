@@ -15,7 +15,7 @@ while True:
     print('[2] Log In')
     print('[0] Exit')
     print(' -------------------------------------------------')
-    user_choice_main = input('Enter your choice (0-2): ')
+    user_choice_main = input('Enter Your Choice Number (0-2): ')
     
     match user_choice_main:
         # [1] Add New Customer
@@ -103,8 +103,40 @@ while True:
 
                 customer = bank_management.login(account_id, password)
                 if customer:
-                    print(f'------🌟 Welcome back {customer.get_fullname()}! 🌟------')
-                    break
+                    # Customer Account
+                    account = bank_management.create_customer_account(customer)
+
+                    while True:
+                        print(f'\n\n------------🌟 Welcome Back {customer.get_fullname()}! 🌟------------\n')
+                        print('[1] \033[1mWithdraw\033[0m Money from Account') 
+                        print('[2] \033[1mDeposit\033[0m Money into Account')
+                        print('[3] \033[1mTransfer\033[0m Money Between Accounts')
+                        print('[0] Exit')
+                        user_choice_login = input('Enter Your Choice Number (0-3): ')
+                        
+                        match user_choice_login:
+                            # Withdraw Money from Account
+                            case '1':
+                                print('\n----💸 Withdraw Money 💸----')
+                            
+                            # Deposit Money into Account
+                            case '2':
+                                print('\n----💸 Deposit Money 💸----')
+                            
+                            # Transfer Money Between Accounts
+                            case '3':
+                                print('\n----💸 Transfer Money 💸----')
+                            
+                            # Exit
+                            case '0':
+                                print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                print(' \033[1m-----------------------------------------------------------\033[0m')
+                                sys.exit()
+                            
+                            # Default case
+                            case _:
+                                print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
                 else:
                     print('\n⚠️ Invalid account ID or password!\n!!! Don\'t have an account? Return to the main menu by typing "back or b" !!!\n')
 
