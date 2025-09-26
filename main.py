@@ -198,8 +198,104 @@ while True:
                             
                             # Deposit Money into Account
                             case '2':
+                                # --[ 3. Ask account type for deposit ]--
                                 print('\n----💸 Deposit Money 💸----')
-                            
+                                print('[1] Deposit into \033[1mChecking\033[0m Account') 
+                                print('[2] Deposit into \033[1mSavings\033[0m Account')
+                                print('[3] Back')
+                                print('[0] Exit')
+                                user_choice_deposit = input('- Enter Your Choice Number (0-3): ')
+                                
+                                match user_choice_deposit:
+                                    # Deposit into Checking Account
+                                    case '1':
+                                        account_type = 'checking'
+                                                                                
+                                        # If customer does NOT has checking account, create it if he wants
+                                        if not customer.has_checking_account():
+                                            print('\n⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
+                                            while True:
+                                                user_want_open_account = input('- Do you want to open Checking Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                if user_want_open_account == '1':
+                                                    # Update `balance_checking` from `None` to `0`
+                                                    customer.balance_checking = 0
+                                                    break
+                                                elif user_want_open_account == '2':
+                                                    break
+                                                else:
+                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                            continue  # return to Deposit menu
+                                        
+                                        print('\n----💸 Deposit into \033[1mChecking\033[0m Account 💸----')
+                                        print(f'💳 Balance in checking account: \033[1m{customer.balance_checking}\033[0m$ 💳\n')
+                                        
+                                        # --[ 4. Ask the amount to deposit ]--
+                                        while True:
+                                            try:
+                                                amount = float(input(f'- Enter Amount to Deposit into Checking Account: $'))
+                                                success, message = account.deposit(amount, account_type)
+                                                print(message)
+                                                if success:
+                                                    bank_management.save_all_customers()
+                                                break
+                                            except ValueError:
+                                                print('\n⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+                                        
+                                        # stay in deposit menu after the deposit process (success or failure)
+                                        continue
+                                    
+                                    # Deposit into Savings Account
+                                    case '2':
+                                        account_type = 'savings'
+
+                                        # If customer does NOT has savings account, create it if he wants
+                                        if not customer.has_savings_account():
+                                            print('\n⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
+                                            while True:
+                                                user_want_open_account = input('- Do you want to open Savings Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                if user_want_open_account == '1':
+                                                    # Update `balance_savings` from `None` to `0`
+                                                    customer.balance_savings = 0
+                                                    break
+                                                elif user_want_open_account == '2':
+                                                    break
+                                                else:
+                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                            continue  # return to Deposit menu
+                                        
+                                        print('\n----💸 Deposit into \033[1mSavings\033[0m Account 💸----')
+                                        print(f'💳 Balance in savings account: \033[1m{customer.balance_savings}\033[0m$ 💳\n')
+                                        
+                                        # --[ 4. Ask the amount to deposit ]--
+                                        while True:
+                                            try:
+                                                amount = float(input(f'- Enter Amount to Deposit into Savings Account: $'))
+                                                success, message = account.deposit(amount, account_type)
+                                                print(message)
+                                                if success:
+                                                    bank_management.save_all_customers()
+                                                break
+                                            except ValueError:
+                                                print('⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+                                        
+                                        # stay in deposit menu after the deposit process (success or failure)
+                                        continue
+                                    
+                                    # Back
+                                    case '3':
+                                        break
+                                    
+                                    # Exit
+                                    case '0':
+                                        print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                        print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                        print(' \033[1m-----------------------------------------------------------\033[0m')
+                                        sys.exit()
+                                    
+                                    # Default case
+                                    case _:
+                                        print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
+                           
                             # Transfer Money Between Accounts
                             case '3':
                                 print('\n----💸 Transfer Money 💸----')
