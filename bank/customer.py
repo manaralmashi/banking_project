@@ -13,6 +13,19 @@ class Customer:
         self.is_active = bool(is_active)
         self.overdraft_count = int(overdraft_count)
     
+    def __str__(self):
+        temp_list = [
+            self.account_id, 
+            self.first_name, 
+            self.last_name, 
+            self.password, 
+            str(self.balance_checking) if self.balance_checking is not None else "",
+            str(self.balance_savings) if self.balance_savings is not None else "",
+            str(self.is_active), 
+            str(self.overdraft_count)
+        ]
+        return f'{temp_list}'
+        
     def get_fullname(self):
         return f"{self.first_name} {self.last_name}"
     
