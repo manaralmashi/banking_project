@@ -3,7 +3,7 @@
 import re
 
 class Customer:
-    def __init__(self, account_id, first_name, last_name, password, balance_checking=0, balance_savings=0, is_active=True, overdraft_count=0):
+    def __init__(self, account_id, first_name, last_name, password, balance_checking = None, balance_savings = None, is_active = True, overdraft_count = 0):
         self.account_id = account_id
         self.first_name = first_name
         self.last_name = last_name
