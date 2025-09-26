@@ -107,6 +107,7 @@ while True:
                     account = bank_management.create_customer_account(customer)
 
                     while True:
+                        # --[ 2. Ask the operation ]--
                         print(f'\n\n------------🌟 Welcome Back {customer.get_fullname()}! 🌟------------\n')
                         print('[1] \033[1mWithdraw\033[0m Money from Account') 
                         print('[2] \033[1mDeposit\033[0m Money into Account')
@@ -117,7 +118,83 @@ while True:
                         match user_choice_login:
                             # Withdraw Money from Account
                             case '1':
+                                # --[ 3. Ask account type for withdraw ]--
                                 print('\n----💸 Withdraw Money 💸----')
+                                print('[1] Withdraw from \033[1mChecking\033[0m Account') 
+                                print('[2] Withdraw from \033[1mSavings\033[0m Account')
+                                print('[3] Back')
+                                print('[0] Exit')
+                                user_choice_withdraw = input('- Enter Your Choice Number (0-3): ')
+                                
+                                match user_choice_withdraw:
+                                    # Withdraw from Checking Account
+                                    case '1':
+                                        account_type = 'checking'
+                                        
+                                        # If customer does NOT has checking account, create it if he wants
+                                        if not customer.has_checking_account():
+                                            print('⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
+                                            continue  # return to Withdraw menu
+                                        
+                                        print('\n----💸 Withdraw from \033[1mChecking\033[0m Account 💸----')
+                                        print(f'💳 Balance in checking account: \033[1m{customer.balance_checking}\033[0m$ 💳')
+                                        
+                                        # --[ 4. Ask the amount to withdraw ]--
+                                        while True:
+                                            try:
+                                                amount = float(input(f'- Enter Amount to Withdraw from Checking Account: $'))
+                                                success, message = account.withdraw(amount, account_type)
+                                                print(message)
+                                                if success:
+                                                    bank_management.save_all_customers()
+                                                break
+                                            except ValueError:
+                                                print('\n⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+                                        
+                                        # stay in withdraw menu after the withdraw process (success or failure)
+                                        continue
+                                    
+                                    # Withdraw from Savings Account
+                                    case '2':
+                                        account_type = 'savings'
+                                        
+                                        # If customer does NOT has savings account, create it if he wants
+                                        if not customer.has_savings_account():
+                                            print('⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
+                                            continue  # return to Withdraw menu
+                                        
+                                        print('\n----💸 Withdraw from \033[1mSavings\033[0m Account 💸----')
+                                        print(f'💳 Balance in savings account: \033[1m{customer.balance_savings}\033[0m$ 💳')
+                                        
+                                        # --[ 4. Ask the amount to withdraw ]--
+                                        while True:
+                                            try:
+                                                amount = float(input(f'- Enter Amount to Withdraw from Savings Account: $'))
+                                                success, message = account.withdraw(amount, account_type)
+                                                print(message)
+                                                if success:
+                                                    bank_management.save_all_customers()
+                                                break
+                                            except ValueError:
+                                                print('⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+                                        
+                                        # stay in withdraw menu after the withdraw process (success or failure)
+                                        continue
+
+                                    # Back
+                                    case '3':
+                                        break
+
+                                    # Exit
+                                    case '0':
+                                        print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                        print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                        print(' \033[1m-----------------------------------------------------------\033[0m')
+                                        sys.exit()
+
+                                    # Default case
+                                    case _:
+                                        print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
                             
                             # Deposit Money into Account
                             case '2':
