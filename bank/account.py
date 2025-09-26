@@ -33,18 +33,22 @@ class Account:
             
             # withdraw tme amount from savings account
             self.customer.balance_savings -= amount
-            return True, f"✅ The amount of {amount}$ was withdrawn from the Savings Account 💸.\n💳 Current Savings Account Balance: {self.customer.savings_checking}$"
+            return True, f"✅ The amount of {amount}$ was withdrawn from the Savings Account 💸.\n💳 Current Savings Account Balance: {self.customer.balance_savings}$"
         
         return False, "⚠️ Invalid Account Type!"
     
     def deposit(self, amount, account_type):
+        # if the amount less than or equal to 0
+        if amount <= 0:
+            return False, "⚠️ Deposit amount must be greater than zero!"
+
         # ---------- 1. DEPOSIT INTO CHECKING ACCOUNT ----------
         if account_type == "checking":
             # if the customer doesn't have a checking account
             if not self.customer.has_checking_account():
                 return False, "⚠️ You do NOT have a Checking Account!"
             
-            # deposit tme amount into checking account
+            # deposit the amount into checking account
             self.customer.balance_checking += amount
             return True, f"✅ ${amount} has been deposited to Checking Account 💰.\n💳 Current Checking Account Balance: {self.customer.balance_checking}$"
         
