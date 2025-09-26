@@ -296,10 +296,169 @@ while True:
                                     case _:
                                         print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
                            
-                            # Transfer Money Between Accounts
+                            # Transfer Money
                             case '3':
-                                print('\n----💸 Transfer Money 💸----')
-                            
+                                while True:
+                                    # --[ 3. Ask the transfer between who's accounts ]--
+                                    print('\n----💸 Transfer Money 💸----')
+                                    print('[1] Transfer money between my accounts')
+                                    print('[2] Transfer money to another customer')
+                                    print('[3] Back')
+                                    print('[0] Exit')
+                                    user_choice_transfer = input('- Enter Your Choice Number (0-3): ')
+                                
+                                    match user_choice_transfer:
+                                        # Transfer money between my accounts
+                                        case '1':
+                                            # --[ 4. Ask the transfer (from/to) ]--
+                                            print('\n----💸 Transfer between my accounts 💸----')
+                                            print('[1] Transfer from Checking to Savings')
+                                            print('[2] Transfer from Savings to Checking')
+                                            print('[3] Back')
+                                            print('[0] Exit')
+                                            user_choice_transfer_between = input('Enter Your Choice Number (0-3): ')
+                                            
+                                            match user_choice_transfer_between:
+                                                # Transfer from Checking to Savings
+                                                case '1':
+                                                    # Check the existence of checking and savings accounts
+                                                    if not customer.has_checking_account() or not customer.has_savings_account():
+                                                        print('\n❗️ To Transfer between your accounts, you MUST have both checking and savings accounts ❗️')
+                                                        
+                                                        # If customer does NOT has checking account, create it if he wants
+                                                        if not customer.has_checking_account():
+                                                            print('\n⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
+                                                            while True:
+                                                                user_want_open_account = input('- Do you want to open Checking Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                                if user_want_open_account == '1':
+                                                                    # Update `balance_checking` from `None` to `0`
+                                                                    customer.balance_checking = 0
+                                                                    print('✅ Checking Account Created ✅')
+                                                                    break
+                                                                elif user_want_open_account == '2':
+                                                                    break
+                                                                else:
+                                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                                            continue  # return to transfer menu
+
+                                                        # If customer does NOT has savings account, create it if he wants
+                                                        elif not customer.has_savings_account():
+                                                            print('\n⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
+                                                            while True:
+                                                                user_want_open_account = input('- Do you want to open Savings Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                                if user_want_open_account == '1':
+                                                                    # Update `balance_savings` from `None` to `0`
+                                                                    customer.balance_savings = 0
+                                                                    print('✅ Savings Account Created ✅')
+                                                                    break
+                                                                elif user_want_open_account == '2':
+                                                                    break
+                                                                else:
+                                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                                            continue  # return to transfer menu
+                                                    
+                                                    # the customer has both checking and savings accounts! So, let do the transfer
+                                                    try:
+                                                        # --[ 5. Ask the amount to transfer ]--
+                                                        print(f'\n💳 Balance in Checking account: \033[1m{customer.balance_checking}\033[0m$ 💳')
+                                                        print(f'💳 Balance in Savings account: \033[1m{customer.balance_savings}\033[0m$ 💳\n')
+                                                        amount = float(input(f'- Enter Amount to Transfer from Checking to Savings : $'))
+                                                        success, message = account.transfer(amount, 'checking', 'savings')
+                                                        print(message)
+                                                        if success:
+                                                            bank_management.save_all_customers()
+                                                    except ValueError:
+                                                        print('\n⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+
+                                                # Transfer from Savings to Checking
+                                                case '2':
+                                                    # Check the existence of checking and savings accounts
+                                                    if not customer.has_checking_account() or not customer.has_savings_account():
+                                                        print('\n❗️ To Transfer between your accounts, you MUST have both checking and savings accounts ❗️')
+                                                        
+                                                        # If customer does NOT has checking account, create it if he wants
+                                                        if not customer.has_checking_account():
+                                                            print('\n⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
+                                                            while True:
+                                                                user_want_open_account = input('- Do you want to open Checking Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                                if user_want_open_account == '1':
+                                                                    # Update `balance_checking` from `None` to `0`
+                                                                    customer.balance_checking = 0
+                                                                    print('✅ Checking Account Created ✅')
+                                                                    break
+                                                                elif user_want_open_account == '2':
+                                                                    break
+                                                                else:
+                                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                                            continue  # return to transfer menu
+
+                                                        # If customer does NOT has savings account, create it if he wants
+                                                        elif not customer.has_savings_account():
+                                                            print('\n⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
+                                                            while True:
+                                                                user_want_open_account = input('- Do you want to open Savings Account?\n[1] Yes\n[2] No\n- Enter Your Choice Number (1 or 2):').strip()
+                                                                if user_want_open_account == '1':
+                                                                    # Update `balance_savings` from `None` to `0`
+                                                                    customer.balance_savings = 0
+                                                                    print('✅ Savings Account Created ✅')
+                                                                    break
+                                                                elif user_want_open_account == '2':
+                                                                    break
+                                                                else:
+                                                                    print('\n⚠️ \033[1mInvalid Input!\033[0m Please Enter Your Choice Number (1 or 2)')
+                                                            continue  # return to transfer menu
+                                                    
+                                                    # the customer has both checking and savings accounts! So, let do the transfer
+                                                    try:
+                                                        # --[ 5. Ask the amount to transfer ]--
+                                                        print(f'\n💳 Balance in Checking account: \033[1m{customer.balance_checking}\033[0m$ 💳')
+                                                        print(f'💳 Balance in Savings account: \033[1m{customer.balance_savings}\033[0m$ 💳\n')
+                                                        amount = float(input(f'- Enter Amount to Transfer from Savings to Checking : $'))
+                                                        success, message = account.transfer(amount, 'savings', 'checking')
+                                                        print(message)
+                                                        if success:
+                                                            bank_management.save_all_customers()
+                                                    except ValueError:
+                                                        print('\n⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+
+                                                # Back
+                                                case '3':
+                                                    break
+
+                                                # Exit
+                                                case '0':
+                                                    print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                                    print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                                    print(' \033[1m-----------------------------------------------------------\033[0m')
+                                                    sys.exit()
+
+                                                # Default case
+                                                case _:
+                                                    print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
+
+                                            break #if transfer between account is success return to the menu
+                                        
+                                        # Transfer money to another customer
+                                        case '2':
+                                            print('❌ Transfer to other customers coming soon!')
+                                            
+                                            break #if transfer between account is success return to the menu
+
+                                        # Back
+                                        case '3':
+                                            break
+
+                                        # Exit
+                                        case '0':
+                                            print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                            print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                            print(' \033[1m-----------------------------------------------------------\033[0m')
+                                            sys.exit()
+
+                                        # Default case
+                                        case _:
+                                            print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
+
                             # Exit
                             case '0':
                                 print('\n \033[1m-----------------------------------------------------------\033[0m')
