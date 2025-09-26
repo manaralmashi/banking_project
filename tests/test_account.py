@@ -25,7 +25,7 @@ class TestAccount(unittest.TestCase):
     # --------------------------------------- Withdraw Tests ---------------------------------------
     def test_success_withdraw_checking(self):
         # [ Test 1 ] success withdraw from Checking Account
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         success, message = self.account2.withdraw(100, "checking")
         self.assertTrue(success)
         self.assertIn("withdrawn from the Checking Account", message)
@@ -33,7 +33,7 @@ class TestAccount(unittest.TestCase):
 
     def test_success_withdraw_savings(self):
         # [ Test 2 ] success withdraw from Savings Account
-        # Use ( account3: Only savings account)
+        # Use ( account3: Only savings account )
         success, message = self.account3.withdraw(500, "savings")
         self.assertTrue(success)
         self.assertIn("withdrawn from the Savings Account", message)
@@ -41,7 +41,7 @@ class TestAccount(unittest.TestCase):
 
     def test_withdraw_amount_greater_than_checking(self):
         # [ Test 3 ] withdraw from Checking Account that the amount is greater than in checking account
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         success, message = self.account2.withdraw(300, "checking")
         self.assertFalse(success)
         self.assertIn("greater than the amount in your Checking Account", message)
@@ -49,7 +49,7 @@ class TestAccount(unittest.TestCase):
 
     def test_withdraw_amount_greater_than_savings(self):
         # [ Test 4 ] withdraw from Checking Account that the amount is greater than in savings Account
-        # Use ( account3: Only savings account)
+        # Use ( account3: Only savings account )
         success, message = self.account3.withdraw(2000, "savings")
         self.assertFalse(success)
         self.assertIn("greater than the amount in your Savings Account", message)
@@ -57,28 +57,28 @@ class TestAccount(unittest.TestCase):
 
     def test_withdraw_no_checking_account(self):
         # [ Test 5 ] withdraw from Checking Account that does NOT exist
-        # Use ( account1: No accounts)
+        # Use ( account1: No accounts )
         success, message = self.account1.withdraw(100, "checking")
         self.assertFalse(success)
         self.assertIn("do NOT have a Checking Account", message)
 
     def test_withdraw_no_savings_account(self):
         # [ Test 6 ] withdraw from Savings Account that does NOT exist
-        # Use ( account1: No accounts)
+        # Use ( account1: No accounts )
         success, message = self.account1.withdraw(100, "savings")
         self.assertFalse(success)
         self.assertIn("do NOT have a Savings Account", message)
 
     def test_withdraw_invalid_account_type(self):
         # [ Test 7 ] withdraw from Invalid account type
-        # Use ( account4: Both checking and savings accounts)
+        # Use ( account4: Both checking and savings accounts )
         success, message = self.account4.withdraw(100, "markit")
         self.assertFalse(success)
         self.assertIn("Invalid Account Type", message)
 
     def test_withdraw_from_deactive_account(self):
         # [ Test 8 ] withdraw from Deactive account type
-        # Use ( account6: Deactive account)
+        # Use ( account6: Deactive account )
         success, message = self.account6.withdraw(100, "checking")
         self.assertFalse(success)
         self.assertIn("Account is Deactive", message)
@@ -87,7 +87,7 @@ class TestAccount(unittest.TestCase):
     # --------------------------------------- Deposit Tests ---------------------------------------
     def test_success_deposit_checking(self):
         # [ Test 9 ] success deposit to Checking Account
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         initial_balance = self.customer2.balance_checking
         deposit_amount = 300
         expected_balance = initial_balance + deposit_amount
@@ -101,7 +101,7 @@ class TestAccount(unittest.TestCase):
 
     def test_success_deposit_savings(self):
         # [ Test 10 ] success deposit to Savings Account
-        # Use ( account3: Only savings account)
+        # Use ( account3: Only savings account )
         initial_balance = self.customer3.balance_savings
         deposit_amount = 500
         expected_balance = initial_balance + deposit_amount
@@ -115,7 +115,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_no_checking_account(self):
         # [ Test 11 ] deposit to Checking Account that does NOT exist
-        # Use ( account1: No accounts)
+        # Use ( account1: No accounts )
         success, message = self.account1.deposit(100, "checking")
         
         self.assertFalse(success)
@@ -124,7 +124,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_no_savings_account(self):
         # [ Test 12 ] deposit to Savings Account that does NOT exist
-        # Use ( account1: No accounts)
+        # Use ( account1: No accounts )
         success, message = self.account1.deposit(100, "savings")
 
         self.assertFalse(success)
@@ -133,7 +133,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_invalid_account_type(self):
         # [ Test 13 ] deposit to Invalid account type
-        # Use ( account4: Both checking and savings accounts)
+        # Use ( account4: Both checking and savings accounts )
         initial_balance_checking = self.customer4.balance_checking
         initial_balance_savings = self.customer4.balance_savings
         
@@ -147,7 +147,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_zero_amount(self):
         # [ Test 14 ] deposit amount = 0 into account
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         initial_balance = self.customer2.balance_checking
         
         success, message = self.account2.deposit(0, "checking")
@@ -157,7 +157,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_negative_amount(self):
         # [ Test 15 ] deposit negative amount (edge case)
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         initial_balance = self.customer2.balance_checking
         
         success, message = self.account2.deposit(-250, "checking")
@@ -167,7 +167,7 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_decimal_amount(self):
         # [ Test 16 ] deposit decimal amount
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         initial_balance = self.customer2.balance_checking
         decimal_amount = 153.67
         expected_balance = initial_balance + decimal_amount
@@ -177,11 +177,11 @@ class TestAccount(unittest.TestCase):
         self.assertIn("deposited to Checking Account", message)
         
         # Used `assertAlmostEqual()` instead of `assertEqual()` floating-point comparisons to avoid precision issues.
-        self.assertAlmostEqual(self.customer2.balance_checking, expected_balance, places=2)
+        self.assertAlmostEqual(self.customer2.balance_checking, expected_balance, places = 2)
 
     def test_deposit_multiple_times_checking(self):
         # [ Test 17 ] multiple deposits to Checking Account
-        # Use ( account2: Only checking account)
+        # Use ( account2: Only checking account )
         initial_balance = self.customer2.balance_checking
         
         # deposit 1
@@ -200,9 +200,102 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(self.customer2.balance_checking, initial_balance + 450)
 
     # --------------------------------------- Transfer Tests ---------------------------------------
-    def test_transfer(self):
-        pass
+    def test_success_transfer_checking_to_savings(self):
+        # [ Test 18 ] success transfer from Checking to Savings
+        # Use ( account4: Both checking and savings accounts )
+        initial_checking = self.customer4.balance_checking
+        initial_savings = self.customer4.balance_savings
+        transfer_amount = 500
         
+        success, message = self.account4.transfer(transfer_amount, "checking", "savings")
+        
+        self.assertTrue(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking - transfer_amount)
+        self.assertEqual(self.customer4.balance_savings, initial_savings + transfer_amount)
+
+    def test_success_transfer_savings_to_checking(self):
+        # [ Test 19 ] success transfer from Savings to Checking
+        # Use ( account4: Both checking and savings accounts )
+        initial_checking = self.customer4.balance_checking
+        initial_savings = self.customer4.balance_savings
+        transfer_amount = 1000
+        
+        success, message = self.account4.transfer(transfer_amount, "savings", "checking")
+        
+        self.assertTrue(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking + transfer_amount)
+        self.assertEqual(self.customer4.balance_savings, initial_savings - transfer_amount)
+
+    def test_transfer_amount_greater_than_checking(self):
+        # [ Test 20 ] transfer from Checking to Savings with amount greater than checking
+        # Use ( account5: Low balance)
+        initial_checking = self.customer5.balance_checking
+        initial_savings = self.customer5.balance_savings
+        transfer_amount = 1000  # greater than (checking balance = 15$)
+        
+        success, message = self.account5.transfer(transfer_amount, "checking", "savings")
+        
+        self.assertFalse(success)
+        self.assertEqual(self.customer5.balance_checking, initial_checking)  # balance doesn't change
+        self.assertEqual(self.customer5.balance_savings, initial_savings)    # balance doesn't change
+
+    def test_transfer_amount_greater_than_savings(self):
+        # [ Test 21 ] transfer from Savings to Checking with amount greater than savings
+        # Use ( account5: Low balance)
+        initial_checking = self.customer5.balance_checking
+        initial_savings = self.customer5.balance_savings
+        transfer_amount = 100  # greater than (checking balance = 50$)
+        
+        success, message = self.account5.transfer(transfer_amount, "savings", "checking")
+        
+        self.assertFalse(success)
+        self.assertEqual(self.customer5.balance_checking, initial_checking)  # balance doesn't change
+        self.assertEqual(self.customer5.balance_savings, initial_savings)    # balance doesn't change
+
+    # def test_transfer_no_checking_account(self):
+    #     # [ Test 22 ] transfer from Checking account that does NOT exist
+    #     # Use ( account3: Only savings account )
+    #     success, message = self.account3.transfer(100, "checking", "savings")
+    #     self.assertFalse(success)
+
+    # def test_transfer_no_savings_account(self):
+    #     # [ Test 23 ] transfer to Savings account that does NOT exist
+    #     # Use ( account2: Only checking account )
+    #     success, message = self.account2.transfer(100, "checking", "savings")
+    #     self.assertFalse(success)
+
+    def test_transfer_zero_amount(self):
+        # [ Test 27 ] transfer zero amount
+        # Use ( account4: Both checking and savings accounts )
+        initial_checking = self.customer4.balance_checking
+        success, message = self.account4.transfer(0, "checking", "savings")
+
+        self.assertFalse(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking)    # balance doesn't change
+
+    def test_transfer_negative_amount(self):
+        # [ Test 28 ] transfer negative amount
+        # Use ( account4: Both checking and savings accounts )
+        initial_checking = self.customer4.balance_checking
+        success, message = self.account4.transfer(-100, "checking", "savings")
+        
+        self.assertFalse(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking)     # balance doesn't change
+
+    def test_transfer_decimal_amount(self):
+        # [ Test 29 ] transfer decimal amount
+        # Use ( account4: Both checking and savings accounts )
+        initial_checking = self.customer4.balance_checking
+        initial_savings = self.customer4.balance_savings
+        transfer_amount = 250.50
+        
+        success, message = self.account4.transfer(transfer_amount, "checking", "savings")
+        
+        self.assertTrue(success)
+        self.assertAlmostEqual(self.customer4.balance_checking, initial_checking - transfer_amount, places = 2)
+        self.assertAlmostEqual(self.customer4.balance_savings, initial_savings + transfer_amount, places = 2)
+
+
     # [3]. close - (if i want run something after test)
     def tearDown(self):
         pass
