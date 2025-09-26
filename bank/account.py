@@ -38,7 +38,27 @@ class Account:
         return False, "⚠️ Invalid Account Type!"
     
     def deposit(self, amount, account_type):
-        pass
+        # ---------- 1. DEPOSIT INTO CHECKING ACCOUNT ----------
+        if account_type == "checking":
+            # if the customer doesn't have a checking account
+            if not self.customer.has_checking_account():
+                return False, "⚠️ You do NOT have a Checking Account!"
+            
+            # deposit tme amount into checking account
+            self.customer.balance_checking += amount
+            return True, f"✅ ${amount} has been deposited to Checking Account 💰.\n💳 Current Checking Account Balance: {self.customer.balance_checking}$"
+        
+        # ---------- 2. DEPOSIT INTO SAVINGS ACCOUNT ----------
+        elif account_type == "savings":
+            # if the customer doesn't have a savings account
+            if not self.customer.has_savings_account():
+                return False, "⚠️ You do NOT have a Savings Account!"
+            
+            # deposit tme amount into savings account
+            self.customer.balance_savings += amount
+            return True, f"✅ ${amount} has been deposited to Savings Account 💰.\n💳 Current Savings Account Balance: {self.customer.balance_savings}$"
+
+        return False, "⚠️ Invalid Account Type!"
     
     def transfer(self):
         pass
