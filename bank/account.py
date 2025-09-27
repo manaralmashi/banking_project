@@ -80,6 +80,33 @@ class Account:
         
         return False, "⚠️ Invalid Account Type!"
     
+    def reactivate(self, user_reactivate_amount):
+        if self.customer.is_active:
+            return True, "✅ Account is already active"
+        
+        # calculate required amount to reactivate account
+        checking_balance = self.customer.balance_checking or 0
+        if checking_balance >= 0:
+            balance_to_cover = 0
+        else:
+            balance_to_cover = abs(checking_balance)
+
+        total_fees = self.customer.overdraft_count * self.customer.overdraft_fee
+        total_required = balance_to_cover + total_fees
+        
+        if user_reactivate_amount >= total_required:
+            # deposit amount
+            if self.customer.balance_checking is not None:
+                self.customer.balance_checking += user_reactivate_amount
+            
+            # reactivate
+            self.customer.is_active = True
+            self.customer.overdraft_count = 0
+            
+            return True, f"✅ Account reactivated! Overdraft count reset to zero.\n💳 New Balance: ${(self.customer.balance_checking or self.customer.balance_savings or 0):.2f}"
+        else:
+            return False, f"⚠️ Insufficient amount. Required: ${total_required:.2f}"
+    
     def deposit(self, amount, account_type):
         # if the amount less than or equal to 0
         if amount <= 0:
