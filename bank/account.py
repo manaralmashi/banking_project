@@ -1,9 +1,18 @@
-# from bank.bank_management import BankManagement
+
 class Account:
     def __init__(self, customer):
         self.customer = customer
     
-    def withdraw(self, amount, account_type):
+    def get_account_balance(self, account_type):
+        if  self.customer.has_checking_account() and account_type == "checking":
+            return self.customer.balance_checking
+
+        elif self.customer.has_savings_account() and account_type == "savings":
+            return self.customer.balance_savings
+
+        return None
+    
+    def withdraw(self, amount, account_type, bank_management = None):
         # if the account is Deactive
         if not self.customer.is_active:
             return False, "⚠️ The Account is Deactive ⚠️"
@@ -50,7 +59,10 @@ class Account:
                 # (Overdraft Protection): Deactivate the account after 2 overdrafts
                 if self.customer.overdraft_count >= 2:
                     self.customer.is_active = False
-                
+                    # save
+                    if bank_management:
+                        bank_management.save_all_customers()
+
                 message = f"✅ ${amount} withdrawn from Checking Account 💸\n"
                 message += f"⚠️ Overdraft Fee of ${self.customer.overdraft_fee} applied\n"
                 message += f"⚠️ Overdraft Count: {self.customer.overdraft_count}\n"
@@ -80,7 +92,7 @@ class Account:
         
         return False, "⚠️ Invalid Account Type!"
     
-    def reactivate(self, user_reactivate_amount):
+    def reactivate(self, user_reactivate_amount, bank_management = None):
         if self.customer.is_active:
             return True, "✅ Account is already active"
         
@@ -103,7 +115,11 @@ class Account:
             self.customer.is_active = True
             self.customer.overdraft_count = 0
             
-            return True, f"✅ Account reactivated! Overdraft count reset to zero.\n💳 New Balance: ${(self.customer.balance_checking or self.customer.balance_savings or 0):.2f}"
+            # save to csv file
+            if bank_management:
+                bank_management.update_customer(self.customer)
+
+            return True, f"✅ Account reactivated! Overdraft count reset to zero.\n💳 New Balance: ${(self.customer.balance_checking or 0):.2f}"
         else:
             return False, f"⚠️ Insufficient amount. Required: ${total_required:.2f}"
     
@@ -210,12 +226,3 @@ class Account:
             return True, f"✅ ${amount} has been transferred from your {from_account.capitalize()} account to Customer 🌟 {recipient_customer.get_fullname()} | with ID:{receiving_customer_ID} 🌟\n\n💳 Current {from_account.capitalize()} Account Balance: {current_balanca}$ 💳"
         
         return False, "⚠️ Invalid transfer operation!"
-    
-    def get_balance(self, account_type):
-        if  self.customer.has_checking_account() and account_type == "checking":
-            return self.customer.balance_checking
-
-        elif self.customer.has_savings_account() and account_type == "savings":
-            return self.customer.balance_savings
-
-        return None
