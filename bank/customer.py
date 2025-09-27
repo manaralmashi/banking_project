@@ -12,6 +12,9 @@ class Customer:
         self.balance_savings = float(balance_savings) if balance_savings is not None else None
         self.is_active = bool(is_active)
         self.overdraft_count = int(overdraft_count)
+        self.overdraft_fee = 35.00
+        self.max_overdraft_limit = -100.00
+        self.max_overdraft_withdrawal = 100.00
     
     def __str__(self):
         temp_list = [
