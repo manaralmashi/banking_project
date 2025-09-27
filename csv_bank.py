@@ -11,10 +11,15 @@ def search_customer_by_id(account_id, customers):
 def save_customers_to_csv(customers_info_list, filename = "bank.csv"):
     headers = ['account_id', 'first_name', 'last_name', 'password', 'balance_checking', 'balance_savings', 'is_active', 'overdraft_count']
     
-    with open(filename, 'w', newline = '') as file:
-        writer = csv.writer(file)
-        writer.writerow(headers)
-        writer.writerows(customers_info_list)
+    try:
+        with open(filename, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(headers)
+            writer.writerows(customers_info_list)
+        return True
+    except Exception as e:
+        print(f"⚠️ DEBUG CSV: Error saving file: {e}")
+        return False
 
 # to add only new row
 def add_customer_to_csv(customer_info, filename = "bank.csv"):
