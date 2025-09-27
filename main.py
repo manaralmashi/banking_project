@@ -95,7 +95,7 @@ while True:
             
             while True:
                 # --[ 1. Ask the account ID & password ]--
-                account_id = input('- Enter your Account ID: ').strip()
+                account_id = input('- Enter your Account ID (ex. \'2025###\'): ').strip()
                 password = input('- Enter your Password: ').strip()
                 
                 if account_id.lower() in ('b', 'back') or password.lower() in ('b', 'back'):
@@ -305,7 +305,7 @@ while True:
                                     print('[2] Transfer money to another customer')
                                     print('[3] Back')
                                     print('[0] Exit')
-                                    user_choice_transfer = input('- Enter Your Choice Number (0-3): ')
+                                    user_choice_transfer = input('- Enter Your Choice Number (0-3): ').strip()
                                 
                                     match user_choice_transfer:
                                         # Transfer money between my accounts
@@ -440,8 +440,107 @@ while True:
                                         
                                         # Transfer money to another customer
                                         case '2':
-                                            print('❌ Transfer to other customers coming soon!')
-                                            
+                                            from_account_choice = ''
+                                            while True:
+                                                # --[ 4. Ask from which account to transfer ]--
+                                                print('\n----💸 Transfer to another customer 💸----')
+                                                print('[1] Transfer from Checking Account')
+                                                print('[2] Transfer from Savings Account')
+                                                print('[3] Back')
+                                                print('[0] Exit')
+                                                from_account_choice = input('- Enter Your Choice Number (0-3): ').strip()
+                                                
+                                                match from_account_choice:
+                                                    # Transfer from Checking Account
+                                                    case '1':
+                                                        from_account = "checking"
+                                                        # Check the existence of checking accounts
+                                                        if not customer.has_checking_account():
+                                                            print('⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
+                                                            continue
+                                                        break
+                                                    
+                                                    # Transfer from Savings Account
+                                                    case '2':
+                                                        from_account = "savings"
+                                                        # Check the existence of savings accounts
+                                                        if not customer.has_savings_account():
+                                                            print('⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
+                                                            continue
+                                                        break
+                                                        
+                                                    # Back
+                                                    case '3':
+                                                        break
+                                                        
+                                                    # Exit
+                                                    case '0':
+                                                        print('\n \033[1m-----------------------------------------------------------\033[0m')
+                                                        print('|           💸🏦 \033[1mThank you for use ACME Bank\033[0m 🏦💸           |')
+                                                        print(' \033[1m-----------------------------------------------------------\033[0m')
+                                                        sys.exit()
+                                                        
+                                                    # Default case
+                                                    case _:
+                                                        print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
+                                                        continue
+                                                
+                                            if from_account_choice in ['1', '2']:
+                                                # --[ 5. Ask for recipient customer ID ]--
+                                                while True:
+                                                    try:
+                                                        recipient_customer_id = input('- Enter Recipient Customer ID (ex. \'2025###\'): ').strip()
+                                                        
+                                                        if recipient_customer_id.lower() in ('b', 'back'):
+                                                            break
+                                                        
+                                                        # Is the customer exist or not
+                                                        if not bank_management.customer_exists(recipient_customer_id):
+                                                            print('⚠️ \033[1mRecipient customer NOT found!\033[0m Please check the ID.')
+                                                            continue
+
+                                                        # search on recipient customer ID
+                                                        recipient_customer = bank_management.search_customer(recipient_customer_id)
+                                                        
+                                                        if not recipient_customer:
+                                                            print('⚠️ \033[1mRecipient customer NOT found!\033[0m Please check the ID.')
+                                                            continue
+                                                        
+                                                        if recipient_customer_id == customer.account_id:
+                                                            print('⚠️ \033[1mYou can NOT transfer to yourself!\033[0m')
+                                                            continue
+                                                        
+                                                        if not recipient_customer.is_active:
+                                                            print('⚠️ \033[1mRecipient account is Deactivated!\033[0m')
+                                                            continue
+                                                        
+                                                        # --[ 6. Ask for amount to transfer ]--
+                                                        if from_account == "checking":
+                                                            print(f'\n💳 Balance in Checking Account: \033[1m{customer.balance_checking}\033[0m$ 💳')
+                                                        elif from_account == "savings":
+                                                            print(f'\n💳 Balance in Savings Account: \033[1m{customer.balance_savings}\033[0m$ 💳')
+                                                        
+                                                        amount = float(input(f'- Enter Amount to Transfer from your {from_account} account: $'))
+                                                        
+                                                        # Transfer from your account to recipient customer
+                                                        success, message = account.transfer(amount, from_account, "checking", recipient_customer_id, bank_management)
+                                                        print(message)
+                                                        
+                                                        if success:
+                                                            bank_management.save_all_customers()
+                                                        
+                                                        break
+                                                        
+                                                    except ValueError:
+                                                        print('⚠️ \033[1mInvalid Amount!\033[0m Try again.')
+                                                    except Exception as e:
+                                                        print(f'⚠️ \033[1mError: {e}\033[0m')
+                                                
+                                                break  # return to the transfer menu
+
+                                            break  # return to the main menu
+
+
                                             break #if transfer between account is success return to the menu
 
                                         # Back
