@@ -71,9 +71,13 @@ class BankManagement:
         #     customer = self.customers.get(account_id)
         return None
     
-    # May use it later
     def search_customer(self, account_id):
-        return csv_bank.search_customer_by_id(account_id, self.customers)
+        # return csv_bank.search_customer_by_id(account_id, self.customers)
+        account_id_str = str(account_id)
+        return self.customers.get(account_id_str)
+    
+    def customer_exists(self, account_id):
+        return str(account_id) in self.customers
     
     # May use it later in main.py to show the account info
     def get_customer_accounts_info(self, customer):
