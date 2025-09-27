@@ -37,9 +37,9 @@ class TestBankManagement(unittest.TestCase):
         self.assertIsNotNone(customer)
         self.assertEqual(customer.account_id, '3')
 
-    def test_get_customer_accounts_info(self):
+    def test_get_account_info_card(self):
         # Test getting customer account information
-        info = self.bank_management.get_customer_accounts_info(self.customer2)
+        info = self.bank_management.get_account_info_card(self.customer2)
         self.assertIn("Alaa", info)
         self.assertIn("Faisal", info)
 

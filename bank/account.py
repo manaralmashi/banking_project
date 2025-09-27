@@ -12,6 +12,44 @@ class Account:
 
         return None
     
+    # Display Balance Card
+    def get_balance_card(self, customer):
+                                    balance_display = f"""
+                                     \033[34m\033[1m_________________________________________________\033[0m\033[0m
+                                    \033[34m\033[1m|                                                 |\033[0m\033[0m
+                                    \033[34m\033[1m|\033[0m\033[0m           🏦📉 \033[1mACME BANK BALANCE\033[0m 📉🏦           \033[34m\033[1m|\033[0m\033[0m
+                                    \033[34m\033[1m|_________________________________________________|\033[0m\033[0m\n
+                                            🔹 Customer Name : {customer.get_fullname()}  
+                                            🔹 Account ID: {customer.account_id}  
+                                            🔹 Account Status: {'🟢 ACTIVE 🟢' if customer.is_active else '🔴 DEACTIVATED 🔴'}  
+                                     \033[34m\033[1m_________________________________________________\033[0m\033[0m \n"""
+
+                                    if customer.has_checking_account():
+                                        balance_display += f"""
+                                            💳 Checking Account: ${customer.balance_checking}"""
+                                    else:
+                                        balance_display += f"""
+                                            💳 Checking Account: {'NOT AVAILABLE'}"""
+
+                                    if customer.has_savings_account():
+                                        balance_display += f"""
+                                            💳 Savings Account:  ${customer.balance_savings}"""
+                                    else:
+                                        balance_display += f"""
+                                            💳 Savings Account:  {'NOT AVAILABLE'}"""
+
+                                    # Add total balance if both accounts exist
+                                    if customer.has_checking_account() and customer.has_savings_account():
+                                        total_balance = (customer.balance_checking or 0) + (customer.balance_savings or 0)
+                                        balance_display += f"""
+                                     \033[34m\033[1m_________________________________________________\033[0m\033[0m \n
+                                            🔷 \033[1mTotal Balance\033[1m:   ${total_balance}"""
+
+                                    balance_display += """
+                                    \033[34m\033[1m_________________________________________________\033[0m\033[0m"""
+                                     
+                                    return balance_display
+
     def withdraw(self, amount, account_type, bank_management = None):
         # if the account is Deactive
         if not self.customer.is_active:

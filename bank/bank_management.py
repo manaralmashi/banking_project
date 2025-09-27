@@ -48,12 +48,12 @@ class BankManagement:
                 return False
             
             customers_info_list = []
-            print(f"Preparing to save {len(self.customers)} customers...")
+            # print(f"Preparing to save {len(self.customers)} customers...") #--> for testing
             
             # - take every customer and put it in `customers_info_list`
             for customer_id, customer in self.customers.items():
                 customer_info = customer.to_customer_list() # convert from  `DICT` to `LIST`
-                print(f"Customer {customer_id}: active={customer.is_active}, balance={customer.balance_checking}")
+                # print(f"Customer {customer_id}: active={customer.is_active}, balance={customer.balance_checking}") #--> for testing
                 customers_info_list.append(customer_info) # add (the small Customer list) to (the big Customers list)
             
             # - save all customers data on csv
@@ -136,7 +136,7 @@ class BankManagement:
         if account_id in self.customers:
             self.customers[account_id] = customer
             self.save_all_customers()
-            print(f"✅ Updated customer {account_id} in memory and CSV")
+            # print(f"✅ Updated customer {account_id} in memory and CSV") #--> for testing
         else:
             print(f"⚠️ Customer {account_id} not found for update")
 
@@ -148,21 +148,53 @@ class BankManagement:
     def customer_exists(self, account_id):
         return str(account_id) in self.customers
     
-    # May use it later in main.py to show the account info
-    def get_customer_accounts_info(self, customer):
-        info = f"\n-----------------📉 Account Info 📉-----------------\n"
-        info += f"🔹 Customer Name: {customer.first_name} {customer.last_name}\n"
-        info += f"🔹 Account ID   : {customer.account_id}\n"
-        
-        if customer.has_checking_account():
-            info += f"🔹 Checking Account: {customer.balance_checking}$\n"
-        else:
-            info += f"🔹 Checking Account: None\n"
-        
-        if customer.has_savings_account():
-            info += f"🔹 Savings Account: {customer.balance_savings}$\n"
-        else:
-            info += f"🔹 Savings Account: None\n"
-        
-        info += f"🔹 Account: {'Active' if customer.is_active else 'Deactive'}\n"
-        return info
+    # Display Account Info Card
+    def get_account_info_card(self, customer):
+                                    account_info_display = f"""
+                                    \033[34m\033[1m _________________________________________________\033[0m\033[0m
+                                    \033[34m\033[1m|                                                 |\033[0m\033[0m
+                                    \033[34m\033[1m|\033[0m\033[0m          📊 \033[1mACME BANK ACCOUNT INFO\033[0m 📊         \033[34m\033[1m|\033[0m\033[0m
+                                    \033[34m\033[1m|_________________________________________________|\033[0m\033[0m\n
+                                            🔹 Customer Name : {customer.get_fullname()}  
+                                            🔹 Account ID:   {customer.account_id}  
+                                            🔹 Account Status:   {'🟢 ACTIVE 🟢' if customer.is_active else '🔴 DEACTIVATED 🔴'}  
+                                    \033[34m\033[1m_________________________________________________\033[0m\033[0m \n"""
+
+                                    if customer.has_checking_account():
+                                        account_info_display += f"""
+                                            💳 Checking Account: ${customer.balance_checking}"""
+                                    else:
+                                        account_info_display += f"""
+                                            💳 Checking Account: NOT AVAILABLE
+                                                🔄 Open from (Deposit Menu) If You Want!"""
+
+                                    if customer.has_savings_account():
+                                        account_info_display += f"""
+                                            💳 Savings Account:  ${customer.balance_savings}"""
+                                    else:
+                                        account_info_display += f"""
+                                            💳 Savings Account:  NOT AVAILABLE
+                                                🔄 Open from (Deposit Menu) If You Want!"""
+
+                                    # Add total balance if both accounts exist
+                                    if customer.has_checking_account() and customer.has_savings_account():
+                                        total_balance = (customer.balance_checking or 0) + (customer.balance_savings or 0)
+                                        account_info_display += f"""
+                                    \033[34m\033[1m_________________________________________________\033[0m\033[0m \n
+                                            🔷 \033[1mTotal Balance\033[0m:   ${total_balance}"""
+
+                                    # Add overdraft information
+                                    account_info_display += f"""
+                                    \033[34m\033[1m_________________________________________________\033[0m\033[0m \n
+                                            ⚠️  \033[1mOverdraft Protection\033[0m:
+                                                🔻 Overdraft Count: {customer.overdraft_count}
+                                                🔻 Fee per Overdraft: ${customer.overdraft_fee}
+                                                🔻 Max Overdraft Limit: ${customer.max_overdraft_limit}"""
+                                    if customer.has_checking_account() and customer.balance_checking < 0:
+                                         account_info_display += f"""
+                                                🔻 Max Overdraft Limit: ${customer.max_overdraft_limit}"""
+
+                                    account_info_display += """
+                                    \033[34m\033[1m_________________________________________________\033[0m\033[0m"""
+                                    
+                                    return account_info_display
