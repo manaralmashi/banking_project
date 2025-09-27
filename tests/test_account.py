@@ -212,6 +212,59 @@ class TestAccount(unittest.TestCase):
         self.assertFalse(success)
         self.assertIn("greater than the amount in your Savings Account", message)
         self.assertEqual(self.customer3.balance_savings, initial_balance)  # balance doesn't change
+    
+    # ------------- Reactivate Account Tests -------------
+    def test_reactivate_active_account(self):
+        # [ Test 36 ] try to reactivate an already active account
+        success, message = self.account2.reactivate(100, self.bank_management)
+        self.assertTrue(success)
+        self.assertIn("already active", message)
+
+    def test_reactivate_successful(self):
+        # [ Test 37 ] successful reactivation of deactivated account
+        # first Deactive account
+        self.customer2.is_active = False
+        self.customer2.overdraft_count = 2
+        self.customer2.balance_checking = -50
+        
+        # valid amount to reactivation
+        success, message = self.account2.reactivate(200, self.bank_management)
+        
+        self.assertTrue(success)
+        self.assertIn("reactivated", message)
+        self.assertIn("reset to zero", message)
+        self.assertTrue(self.customer2.is_active)
+        self.assertEqual(self.customer2.overdraft_count, 0)
+
+    def test_reactivate_insufficient_amount(self):
+        # [ Test 38 ] try to reactivate with insufficient amount
+        # first Deactive account
+        self.customer2.is_active = False
+        self.customer2.overdraft_count = 2
+        self.customer2.balance_checking = -50
+        
+        # required amount: 50 (to reset to zero) + 70 (2 * Fee) = 120
+        # now we put insufficient amount to reactivation (100)
+        success, message = self.account2.reactivate(100, self.bank_management)
+        
+        self.assertFalse(success)
+        self.assertIn("Insufficient amount", message)
+        self.assertFalse(self.customer2.is_active)  # still deactive
+        self.assertEqual(self.customer2.overdraft_count, 2)  # overdraft_count doesn't change
+
+    def test_reactivate_exact_amount(self):
+        # [ Test 39 ] reactivate with exact required amount
+        self.customer2.is_active = False
+        self.customer2.overdraft_count = 1
+        self.customer2.balance_checking = -30
+        
+        # required amount: 30 (to reset to zero) + 35 (2 * Fee) = 65
+        # now we put the exact required amount (65)
+        success, message = self.account2.reactivate(65, self.bank_management)
+        
+        self.assertTrue(success)
+        self.assertTrue(self.customer2.is_active)
+        self.assertEqual(self.customer2.overdraft_count, 0)
 
     # --------------------------------------- Deposit Tests ---------------------------------------
     def test_success_deposit_checking(self):
