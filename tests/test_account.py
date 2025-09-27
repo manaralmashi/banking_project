@@ -13,6 +13,10 @@ class TestAccount(unittest.TestCase):
         self.customer4 = Customer('4', 'Hasan', 'Yaser', 'Hasan@1234', balance_checking = 3000, balance_savings = 5000)
         self.customer5 = Customer('5', 'Muna', 'Saif', 'Muna@1234', balance_checking = 15, balance_savings = 50)
         self.customer6 = Customer('6', 'deactive', 'User', 'deactive@123', balance_checking = 1000, balance_savings = 2000, is_active = False)
+        # Customer objects - for Overdraft testing 
+        self.customer7 = Customer('7', 'Ahmed', 'Saad', 'Ahmed@123', balance_checking = 50)
+        self.customer8 = Customer('8', 'Manar', 'Ali', 'Manar@123', balance_checking = -50)
+        self.customer9 = Customer('9', 'Ghala', 'Ammar', 'Ghala@123', balance_checking = -80)
 
         # Account objects - for testing
         self.account1 = Account(self.customer1) # No accounts
@@ -21,6 +25,10 @@ class TestAccount(unittest.TestCase):
         self.account4 = Account(self.customer4) # Both checking and savings accounts
         self.account5 = Account(self.customer5) # Low balance
         self.account6 = Account(self.customer6) # Deactive account
+        # Account objects - for Overdraft testing 
+        self.account7 = Account(self.customer7)  # test 1st overdraft
+        self.account8 = Account(self.customer8)  # Negative balance
+        self.account9 = Account(self.customer9)  # Negative balance
 
         # BankManagement objects - for testing transfers to other customers
         self.bank_management = BankManagement()
@@ -31,7 +39,10 @@ class TestAccount(unittest.TestCase):
             '3': self.customer3,
             '4': self.customer4,
             '5': self.customer5,
-            '6': self.customer6
+            '6': self.customer6,
+            '7': self.customer7,
+            '8': self.customer8,
+            '9': self.customer9
         }
 
     # [2]. testing methods
@@ -41,8 +52,9 @@ class TestAccount(unittest.TestCase):
         # Use ( account2: Only checking account )
         success, message = self.account2.withdraw(100, "checking")
         self.assertTrue(success)
-        self.assertIn("withdrawn from the Checking Account", message)
+        self.assertIn("withdrawn from Checking Account", message)
         self.assertEqual(self.customer2.balance_checking, 100)
+        success, message = self.account2.withdraw(100, "checking")
 
     def test_success_withdraw_savings(self):
         # [ Test 2 ] success withdraw from Savings Account
@@ -55,10 +67,11 @@ class TestAccount(unittest.TestCase):
     def test_withdraw_amount_greater_than_checking(self):
         # [ Test 3 ] withdraw from Checking Account that the amount is greater than in checking account
         # Use ( account2: Only checking account )
-        success, message = self.account2.withdraw(300, "checking")
-        self.assertFalse(success)
-        self.assertIn("greater than the amount in your Checking Account", message)
-        self.assertEqual(self.customer2.balance_checking, 200)  # balance doesn't change
+        success, message = self.account2.withdraw(300, "checking") #here the resulting balance become (-100), so we can't withdraw greater than 300$.
+        self.assertTrue(success)
+        self.assertIn("Overdraft Fee", message)
+        # initial balance = 200, it withdrawn 300 and decrease 35$, so 200 - 300 - 355 = -135
+        self.assertEqual(self.customer2.balance_checking, -135)
 
     def test_withdraw_amount_greater_than_savings(self):
         # [ Test 4 ] withdraw from Checking Account that the amount is greater than in savings Account
@@ -89,13 +102,116 @@ class TestAccount(unittest.TestCase):
         self.assertFalse(success)
         self.assertIn("Invalid Account Type", message)
 
+    def test_withdraw_zero_amount(self):
+        # [ Test 8 ] withdraw zero amount
+        # Use ( account2: Only checking account )
+        success, message = self.account2.withdraw(0, "checking")
+        self.assertFalse(success)
+        self.assertIn("must be greater than zero", message)
+        self.assertEqual(self.customer2.balance_checking, 200)
+
+    def test_withdraw_negative_amount(self):
+        # [ Test 9 ] withdraw negative amount
+        # Use ( account2: Only checking account )
+        success, message = self.account2.withdraw(-50, "checking")
+        self.assertFalse(success)
+        self.assertIn("must be greater than zero", message)
+        self.assertEqual(self.customer2.balance_checking, 200)
+
     def test_withdraw_from_deactive_account(self):
-        # [ Test 8 ] withdraw from Deactive account type
+        # [ Test 10 ] withdraw from Deactive account type
         # Use ( account6: Deactive account )
         success, message = self.account6.withdraw(100, "checking")
         self.assertFalse(success)
         self.assertIn("Account is Deactive", message)
         self.assertEqual(self.customer6.balance_checking, 1000)  # balance doesn't change
+    
+    # ------------- Overdraft Protection Tests -------------
+    def test_first_overdraft_checking(self):
+        # [ Test 11 ] first overdraft from Checking Account
+        # Use ( account7 )
+        initial_balance = self.customer7.balance_checking  # balance_checking = 50
+        amount = 100  # withdraw greater than balance (less than -100)
+        
+        success, message = self.account7.withdraw(amount, "checking")
+        
+        self.assertTrue(success)
+        self.assertIn("Overdraft Fee", message)
+        self.assertIn("Overdraft Count: 1", message)
+        
+        # 50 - 100 - 35 = -85
+        expected_balance = initial_balance - amount - self.customer7.overdraft_fee
+        self.assertEqual(self.customer7.balance_checking, expected_balance)
+        self.assertEqual(self.customer7.overdraft_count, 1)
+        self.assertTrue(self.customer7.is_active)  # Account still Active
+
+    def test_second_overdraft_deactivates_account(self):
+        # [ Test 12 ] second overdraft deactivates the account
+        # Use ( account7 )
+
+        # - (1st overdraft)
+        self.account7.withdraw(60, 'checking')  # overdraft_count = 1
+        
+        # - diposit money to be positive
+        self.account7.deposit(100, 'checking')
+        
+        # - (2nd overdraft) (must Deactive the account)
+        success, message = self.account7.withdraw(120, 'checking')
+        self.assertTrue(success)
+        self.assertIn("Account deactivated due to overdrafts", message)
+        self.assertEqual(self.customer7.overdraft_count, 2)
+        self.assertFalse(self.customer7.is_active)  # Account Deactivated
+
+    def test_withdraw_from_negative_balance_within_limit(self):
+        # [ Test 13 ] withdraw from negative balance within $100 limit
+        # Use ( account8: Negative balance )
+        initial_balance = self.customer8.balance_checking  # -50
+        amount = 30  # within $100 limit
+
+        
+        success, message = self.account8.withdraw(amount, "checking")
+        
+        self.assertTrue(success)
+        # expected_balance: -50 - 80 = -130 (no fees bs its already negative)
+        expected_balance = initial_balance - amount
+        self.assertEqual(self.customer8.balance_checking, expected_balance)
+
+    def test_withdraw_from_negative_balance_exceed_limit(self):
+        # [ Test 14 ] withdraw from negative balance exceeding $100 limit
+        # Use ( account8: Negative balance )
+        initial_balance = self.customer8.balance_checking  # -50
+        amount = 90  # -50 - 90 = -140
+        
+        success, message = self.account8.withdraw(amount, "checking")
+        
+        self.assertFalse(success)
+        self.assertIn("Resulting balance cannot be less than $-100", message)
+        self.assertEqual(self.customer8.balance_checking, initial_balance)  # balance doesn't change
+
+    def test_overdraft_fee_calculation(self):
+        # [ Test 16 ] verify overdraft fee calculation
+        # Use ( account7 )
+        initial_balance = 100
+        self.customer7.balance_checking = initial_balance
+        amount = 150  # will overdraft
+        
+        success, message = self.account7.withdraw(amount, "checking")
+        self.assertTrue(success)
+        # 100 - 150 - 35 = -85
+        expected_balance = initial_balance - amount - self.customer7.overdraft_fee
+        self.assertEqual(self.customer7.balance_checking, expected_balance)
+
+    def test_no_overdraft_on_savings_account(self):
+        # [ Test 17 ] no overdraft protection on savings account
+        # Use ( account3: Only savings account )
+        initial_balance = self.customer3.balance_savings  # balance_savings = 1500
+        amount = 2000  # No overdraft
+        
+        success, message = self.account3.withdraw(amount, "savings")
+        
+        self.assertFalse(success)
+        self.assertIn("greater than the amount in your Savings Account", message)
+        self.assertEqual(self.customer3.balance_savings, initial_balance)  # balance doesn't change
 
     # --------------------------------------- Deposit Tests ---------------------------------------
     def test_success_deposit_checking(self):
