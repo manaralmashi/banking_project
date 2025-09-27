@@ -8,6 +8,10 @@ class Account:
         if not self.customer.is_active:
             return False, "⚠️ The Account is Deactive ⚠️"
         
+        # if the amount less than or equal to 0
+        if amount <= 0:
+            return False, "⚠️ Withdrawal amount must be greater than zero!"
+        
         # ---------- 1. WITHDRAW FROM CHECKING ACCOUNT ----------
         if account_type == "checking":
             # if the customer doesn't have a checking account
@@ -15,12 +19,50 @@ class Account:
                 return False, "⚠️ You do NOT have a Checking Account!"
             
             # if the amount greater than in checking account
-            if self.customer.balance_checking < amount:
-                return False, "⚠️ The amount to be withdrawn is greater than the amount in your Checking Account!"
+            # if self.customer.balance_checking < amount:
+            #     return False, "⚠️ The amount to be withdrawn is greater than the amount in your Checking Account!"
             
-            # withdraw the amount from checking account
+            # expected balance after withdraw
+            expected_balance_after_withdraw = self.customer.balance_checking - amount
+            
+            # (Overdraft Protection): the customer cannot make a withdraw of greater than $100
+            if self.customer.balance_checking < 0 and amount > self.customer.max_overdraft_withdrawal:
+                return False, f"⚠️ Cannot withdraw more than ${self.customer.max_overdraft_withdrawal} when account is negative!"
+            
+            # (Overdraft Protection): the account cannot have a resulting balance of less than -$100
+            if expected_balance_after_withdraw < self.customer.max_overdraft_limit:
+                return False, f"⚠️ Resulting balance cannot be less than ${self.customer.max_overdraft_limit}!"
+            
+            # (Overdraft Protection): if balance become negative, overdraft will happen
+            will_overdraft = expected_balance_after_withdraw < 0 and self.customer.balance_checking >= 0
+
+
+            # ❇️ withdraw the amount from checking account
             self.customer.balance_checking -= amount
-            return True, f"✅ The amount of {amount}$ was withdrawn from the Checking Account 💸.\n💳 Current Checking Account Balance: {self.customer.balance_checking}$ 💳"
+            # return True, f"✅ The amount of {amount}$ was withdrawn from the Checking Account 💸.\n💳 Current Checking Account Balance: {self.customer.balance_checking}$ 💳"
+        
+            # If overdraft heppen
+            if will_overdraft:
+                # (Overdraft Protection): FEE of $35
+                self.customer.balance_checking -= self.customer.overdraft_fee
+                self.customer.overdraft_count += 1
+                
+                # (Overdraft Protection): Deactivate the account after 2 overdrafts
+                if self.customer.overdraft_count >= 2:
+                    self.customer.is_active = False
+                
+                message = f"✅ ${amount} withdrawn from Checking Account 💸\n"
+                message += f"⚠️ Overdraft Fee of ${self.customer.overdraft_fee} applied\n"
+                message += f"⚠️ Overdraft Count: {self.customer.overdraft_count}\n"
+                
+                if not self.customer.is_active:
+                    message += "⚠️⚠️⚠️⚠️ Account deactivated due to overdrafts ⚠️⚠️⚠️⚠️\n"
+                
+                message += f"💳 Current Checking Balance: ${self.customer.balance_checking:.2f} 💳"
+                return True, message
+            
+            # If overdraft doesn't heppen, transfer normally
+            return True, f"✅ ${amount} withdrawn from Checking Account 💸\n💳 Current Balance: ${self.customer.balance_checking:.2f} 💳"
         
         # ---------- 2. WITHDRAW FROM SAVINGS ACCOUNT ----------
         elif account_type == "savings":
