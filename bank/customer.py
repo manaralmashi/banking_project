@@ -15,6 +15,18 @@ class Customer:
         self.overdraft_fee = 35.00
         self.max_overdraft_limit = -100.00
         self.max_overdraft_withdrawal = 100.00
+
+        # fix update `is_active` error
+        if isinstance(is_active, str):
+            self.is_active = is_active.lower() == 'true'
+        else:
+            self.is_active = bool(is_active)
+        
+        # fix update `overdraft_count` error
+        try:
+            self.overdraft_count = int(overdraft_count)
+        except (ValueError, TypeError):
+            self.overdraft_count = 0
     
     def __str__(self):
         temp_list = [
@@ -95,6 +107,19 @@ class Customer:
         checking = customer_list[4] if customer_list[4] not in [None, ""] else None
         savings = customer_list[5] if customer_list[5] not in [None, ""] else None
         
+        # update `is_active`
+        is_active = True  # default
+        if len(customer_list) > 6 and customer_list[6] not in [None, ""]:
+            is_active = customer_list[6].lower() == 'true'
+        
+        # update `overdraft_count`
+        overdraft_count = 0  # default
+        if len(customer_list) > 7 and customer_list[7] not in [None, ""]:
+            try:
+                overdraft_count = int(customer_list[7])
+            except ValueError:
+                overdraft_count = 0
+        
         return Customer(
             customer_list[0],  # id
             customer_list[1],  # first name
@@ -102,9 +127,6 @@ class Customer:
             customer_list[3],  # password
             checking,          # balance checking
             savings,           # balance savings
-            customer_list[6],  # active or not?
-            customer_list[7]   # overdraft count
-        
-            # customer_list[6] if len(customer_list) > 6 else True,
-            # customer_list[7] if len(customer_list) > 7 else 0
+            is_active,         # active or not?
+            overdraft_count    # overdraft count
         )
