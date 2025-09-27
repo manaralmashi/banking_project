@@ -11,23 +11,76 @@ class BankManagement:
     def get_all_customers(self):
         customers_info = csv_bank.get_customers_from_csv()
         
+        if not customers_info:
+            print("⚠️ DEBUG: No customers found in CSV file")
+            return {}
+        
+        # print(f"DEBUG: Reading {len(customers_info)} rows from CSV") #--> for testing
+        
         # create customers 'DICT' for faster search instead of 'LIST'
         customers = {} 
-        for info in customers_info[1: ]: # start from `index 1` (bc `index 0` in is the header in csv file)
-            customer = Customer.to_customer_object(info)
-            customers[customer.account_id] = customer
+        # valid_count = 0 #--> for testing
+        
+        # start `customers_info` from index 1 (bc index 0 is the header)
+        for i, info in enumerate(customers_info[1:], 1):
+            if not info or len(info) < 4:
+                # print(f"⚠️ DEBUG: Skipping invalid row {i}") #--> for testing
+                continue
+                
+            try:
+                customer = Customer.to_customer_object(info)
+                # print(f"DEBUG: Row {i} → ID: {customer.account_id}, Active: {customer.is_active}") #--> for testing
+                
+                # add customer obj to the big customers `dict`
+                customers[customer.account_id] = customer
+                # valid_count += 1 #--> for testing
+                
+            except Exception as e:
+                print(f"⚠️ DEBUG: Error in row {i}: {e}")
+        
+        # print(f"DEBUG: Loaded {valid_count} valid customers") #--> for testing
         return customers
     
     def save_all_customers(self):
-        customers_info_list = []
+        try:
+            if not self.customers:
+                print("⚠️ No customers data to save")
+                return False
+            
+            customers_info_list = []
+            print(f"Preparing to save {len(self.customers)} customers...")
+            
+            # - take every customer and put it in `customers_info_list`
+            for customer_id, customer in self.customers.items():
+                customer_info = customer.to_customer_list() # convert from  `DICT` to `LIST`
+                print(f"Customer {customer_id}: active={customer.is_active}, balance={customer.balance_checking}")
+                customers_info_list.append(customer_info) # add (the small Customer list) to (the big Customers list)
+            
+            # - save all customers data on csv
+            success = csv_bank.save_customers_to_csv(customers_info_list)
+            
+            if success:
+                # print("✅ Customers saved successfully!") #--> for testing
+                self.verify_save()
+            else:
+                print("⚠️ Failed to save customers")
+                
+            return success
+            
+        except Exception as e:
+            print(f"⚠️ Error in save_all_customers: {e}")
+            return False
 
-        # - take every customer and put it in `customers_info_list`
-        for customer in self.customers.values():
-            customer_info = customer.to_customer_list() # convert from  `DICT` to `LIST`
-            customers_info_list.append(customer_info) # add (the small Customer list) to (the big Customers list)
-
-        # - save all customers data on csv
-        csv_bank.save_customers_to_csv(customers_info_list)
+    def verify_save(self):
+        try:
+            saved_customers = csv_bank.get_customers_from_csv()
+            # print(f"Verification: {len(saved_customers)} rows in CSV file") #--> for testing
+            
+            # for i, customer_data in enumerate(saved_customers):
+            #     print(f"CSV Row {i}: {customer_data}") #--> for testing
+                
+        except Exception as e:
+            print(f"⚠️ Verification failed: {e}")
     
     def add_new_customer(self, first_name, last_name, password, account_type_choice, initial_deposit_checking = 0, initial_deposit_savings = 0):
         new_customer_id = 2025000 + len(self.customers) + 1
@@ -62,15 +115,31 @@ class BankManagement:
         return new_account
 
     def login(self, account_id, password):
-        customer = self.customers.get(account_id)
-        if customer and customer.is_valid_password() and customer.password == password and customer.is_active:
+        # update CSV file
+        self.refresh_customers()
+        
+        # ✅ search on updated data
+        customer = self.search_customer(account_id)
+        if customer and customer.password == password:
             return customer
-        # elif not customer:
-        #     # redownload data from csv file
-        #     self.customers = self.get_all_customers() 
-        #     customer = self.customers.get(account_id)
         return None
     
+    def refresh_customers(self):
+        # update CSV file: redownload data from csv
+        self.customers = self.get_all_customers()
+
+        # print(f"🔄 Refreshed {len(self.customers)} customers from CSV") #--> for testing
+    
+    def update_customer(self, customer):
+        # convert ID to string
+        account_id = str(customer.account_id)
+        if account_id in self.customers:
+            self.customers[account_id] = customer
+            self.save_all_customers()
+            print(f"✅ Updated customer {account_id} in memory and CSV")
+        else:
+            print(f"⚠️ Customer {account_id} not found for update")
+
     def search_customer(self, account_id):
         # return csv_bank.search_customer_by_id(account_id, self.customers)
         account_id_str = str(account_id)
