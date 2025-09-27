@@ -1,6 +1,7 @@
 import unittest
 from bank.customer import Customer
 from bank.account import Account
+from bank.bank_management import BankManagement
 class TestAccount(unittest.TestCase):
 
     # [1]. open - (if i want run something before test)
@@ -11,7 +12,7 @@ class TestAccount(unittest.TestCase):
         self.customer3 = Customer('3', 'Hala', 'Saad', 'Hala@1234', balance_savings = 1500)
         self.customer4 = Customer('4', 'Hasan', 'Yaser', 'Hasan@1234', balance_checking = 3000, balance_savings = 5000)
         self.customer5 = Customer('5', 'Muna', 'Saif', 'Muna@1234', balance_checking = 15, balance_savings = 50)
-        self.customer6 = Customer('6', 'Inactive', 'User', 'Inactive@123', balance_checking = 1000, balance_savings = 2000, is_active = False)
+        self.customer6 = Customer('6', 'deactive', 'User', 'deactive@123', balance_checking = 1000, balance_savings = 2000, is_active = False)
 
         # Account objects - for testing
         self.account1 = Account(self.customer1) # No accounts
@@ -20,6 +21,18 @@ class TestAccount(unittest.TestCase):
         self.account4 = Account(self.customer4) # Both checking and savings accounts
         self.account5 = Account(self.customer5) # Low balance
         self.account6 = Account(self.customer6) # Deactive account
+
+        # BankManagement objects - for testing transfers to other customers
+        self.bank_management = BankManagement()
+        # add customers in bank_management
+        self.bank_management.customers = {
+            '1': self.customer1,
+            '2': self.customer2, 
+            '3': self.customer3,
+            '4': self.customer4,
+            '5': self.customer5,
+            '6': self.customer6
+        }
 
     # [2]. testing methods
     # --------------------------------------- Withdraw Tests ---------------------------------------
@@ -200,6 +213,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(self.customer2.balance_checking, initial_balance + 450)
 
     # --------------------------------------- Transfer Tests ---------------------------------------
+    # ----- 1. Transfer money between customer's accounts -----
     def test_success_transfer_checking_to_savings(self):
         # [ Test 18 ] success transfer from Checking to Savings
         # Use ( account4: Both checking and savings accounts )
@@ -295,6 +309,59 @@ class TestAccount(unittest.TestCase):
         self.assertAlmostEqual(self.customer4.balance_checking, initial_checking - transfer_amount, places = 2)
         self.assertAlmostEqual(self.customer4.balance_savings, initial_savings + transfer_amount, places = 2)
 
+    # ----- 2. Test Transfer money to another customer -----
+    def test_success_transfer_from_checking_to_another_customer(self):
+        # [ Test 30 ] success transfer from Checking to another customer
+        # Use ( account4 ------> account2 )
+        initial_sender_checking = self.customer4.balance_checking
+        initial_recipient_checking = self.customer2.balance_checking
+        transfer_amount = 500
+        
+        success, message = self.account4.transfer(transfer_amount, "checking", "checking", "2", self.bank_management)
+        self.assertTrue(success)
+        self.assertEqual(self.customer4.balance_checking, initial_sender_checking - transfer_amount)
+        self.assertEqual(self.customer2.balance_checking, initial_recipient_checking + transfer_amount)
+
+    def test_transfer_to_another_customer_insufficient_balance(self):
+        # [ Test 31 ] transfer to another customer with insufficient balance
+        # Use ( account5 ------> account2 )
+        initial_sender_checking = self.customer5.balance_checking
+        initial_recipient_checking = self.customer2.balance_checking
+        transfer_amount = 100  # greater than account5 checking balance (15$)
+        
+        success, message = self.account5.transfer(transfer_amount, "checking", "checking", "2", self.bank_management)
+        self.assertFalse(success)
+        self.assertEqual(self.customer5.balance_checking, initial_sender_checking)  # balance doesn't change
+        self.assertEqual(self.customer2.balance_checking, initial_recipient_checking)  # balance doesn't change
+
+    def test_transfer_to_another_customer_not_found(self):
+        # [ Test 32 ] transfer to non-existent customer
+        # Use ( account4 ------> non-existent customer )
+        initial_checking = self.customer4.balance_checking
+        
+        success, message = self.account4.transfer(500, "checking", "checking", "999", self.bank_management)
+        self.assertFalse(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking)  # balance doesn't change
+
+    def test_transfer_to_another_customer_deactive(self):
+        # [ Test 33 ] transfer to deactivated customer
+        # Use ( account4 ------> account6 (deactive) )
+        initial_checking = self.customer4.balance_checking
+        
+        success, message = self.account4.transfer(500, "checking", "checking", "6", self.bank_management)
+        self.assertFalse(success)
+        self.assertEqual(self.customer4.balance_checking, initial_checking)  # balance doesn't change
+
+    def test_transfer_to_another_customer_create_recipient_account(self):
+        # [ Test 34 ] transfer to customer without checking account (should create it)
+        # Use ( account4 ------> account1 (no checking account) )
+        initial_sender_checking = self.customer4.balance_checking
+        
+        success, message = self.account4.transfer(300, "checking", "checking", "1", self.bank_management)
+        self.assertTrue(success)
+        self.assertEqual(self.customer4.balance_checking, initial_sender_checking - 300)
+        self.assertEqual(self.customer1.balance_checking, 300)  # account created with the amount
+        self.assertTrue(self.customer1.has_checking_account())
 
     # [3]. close - (if i want run something after test)
     def tearDown(self):
