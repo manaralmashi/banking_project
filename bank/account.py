@@ -126,10 +126,10 @@ class Account:
             # - Decrease money from current customer account
             if from_account == "checking":
                 current_balanca = self.customer.balance_checking
-                current_balanca -= amount
+                self.customer.balance_checking -= amount
             else:
                 current_balanca = self.customer.balance_savings
-                current_balanca -= amount
+                self.customer.balance_savings -= amount
             
             # - Increase money in `recipient_customer`'s checking account
             if recipient_customer.has_checking_account():
