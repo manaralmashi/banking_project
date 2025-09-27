@@ -108,10 +108,18 @@ while True:
 
                     while True:
                         # --[ 2. Ask the operation ]--
-                        print(f'\n\n------------🌟 Welcome Back {customer.get_fullname()}! 🌟------------\n')
-                        print('[1] \033[1mWithdraw\033[0m Money from Account') 
+                        print(f'\n\n------------🌟 Welcome Back \033[1m{customer.get_fullname()}\033[0m! 🌟------------\n')
+                        # Account Status display
+                        status = "🟢 ACTIVE" if customer.is_active else "🔴 DEACTIVATED"
+                        print(f"Account Status: {status}")
+
+                        if not customer.is_active:
+                            print("# Use [4] to reactivate your account\n")
+                        
+                        print('\n[1] \033[1mWithdraw\033[0m Money from Account') 
                         print('[2] \033[1mDeposit\033[0m Money into Account')
                         print('[3] \033[1mTransfer\033[0m Money Between Accounts')
+                        print('[4] \033[1mReactivate My Account\033[0m')
                         print('[0] Exit')
                         user_choice_login = input('Enter Your Choice Number (0-3): ')
                         
@@ -130,7 +138,12 @@ while True:
                                     # Withdraw from Checking Account
                                     case '1':
                                         account_type = 'checking'
-                                        
+
+                                        # if account is Deavtive
+                                        if not customer.is_active:
+                                            print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To withdraw money from Checking you should reactivate checking account from the main menu!")
+                                            continue
+
                                         # If customer does NOT has checking account, create it if he wants
                                         if not customer.has_checking_account():
                                             print('⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
@@ -139,14 +152,25 @@ while True:
                                         print('\n----💸 Withdraw from \033[1mChecking\033[0m Account 💸----')
                                         print(f'💳 Balance in checking account: \033[1m{customer.balance_checking}\033[0m$ 💳')
                                         
+                                        if customer.balance_checking < 0:
+                                            print(f'✴️ Overdraft Protection Active ✴️')
+                                            print(f'   • Max withdrawal: ${customer.max_overdraft_withdrawal:.2f}')
+                                            print(f'   • Min balance limit: ${customer.max_overdraft_limit:.2f}')
+                                            print(f'   • Overdraft count: {customer.overdraft_count}')
+                                            print(f'   • Overdraft fee: ${customer.overdraft_fee:.2f}')
+    
                                         # --[ 4. Ask the amount to withdraw ]--
                                         while True:
                                             try:
                                                 amount = float(input(f'- Enter Amount to Withdraw from Checking Account: $'))
-                                                success, message = account.withdraw(amount, account_type)
+                                                success, message = account.withdraw(amount, account_type, bank_management)
                                                 print(message)
                                                 if success:
                                                     bank_management.save_all_customers()
+                                                    # Save immediately if account gets deactivated
+                                                    if not customer.is_active:
+                                                        bank_management.save_all_customers()
+                                                        print("💾 Account status saved to database.")
                                                 break
                                             except ValueError:
                                                 print('\n⚠️ \033[1mInvalid Amount!\033[0m Try again.')
@@ -158,6 +182,11 @@ while True:
                                     case '2':
                                         account_type = 'savings'
                                         
+                                        # if account is Deavtive
+                                        if not customer.is_active:
+                                            print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To withdraw money from Savings you should reactivate checking account from the main menu!")
+                                            continue
+
                                         # If customer does NOT has savings account, create it if he wants
                                         if not customer.has_savings_account():
                                             print('⚠️ \033[1mYou do NOT have a Savings Account!\033[0m')
@@ -210,7 +239,12 @@ while True:
                                     # Deposit into Checking Account
                                     case '1':
                                         account_type = 'checking'
-                                                                                
+                                        
+                                        # if account is Deavtive
+                                        if not customer.is_active:
+                                            print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To Deposit into Checking Account you should reactivate from the main menu!")
+                                            continue
+
                                         # If customer does NOT has checking account, create it if he wants
                                         if not customer.has_checking_account():
                                             print('\n⚠️ \033[1mYou do NOT have a Checking Account!\033[0m')
@@ -247,6 +281,11 @@ while True:
                                     # Deposit into Savings Account
                                     case '2':
                                         account_type = 'savings'
+
+                                        # if account is Deavtive
+                                        if not customer.is_active:
+                                            print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To Deposit into Savings Account you should reactivate from the main menu!")
+                                            continue
 
                                         # If customer does NOT has savings account, create it if he wants
                                         if not customer.has_savings_account():
@@ -310,6 +349,11 @@ while True:
                                     match user_choice_transfer:
                                         # Transfer money between my accounts
                                         case '1':
+                                            # if account is Deavtive
+                                            if not customer.is_active:
+                                                print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To Transfer money between your accounts you should reactivate from the main menu!")
+                                                continue
+
                                             # --[ 4. Ask the transfer (from/to) ]--
                                             print('\n----💸 Transfer between my accounts 💸----')
                                             print('[1] Transfer from Checking to Savings')
@@ -440,6 +484,11 @@ while True:
                                         
                                         # Transfer money to another customer
                                         case '2':
+                                            # if account is Deavtive
+                                            if not customer.is_active:
+                                                print("⚠️ Opps, The Account is \033[1mDeactive\033[0m ⚠️ To Transfer money to another customer you should reactivate from the main menu!")
+                                                continue
+
                                             from_account_choice = ''
                                             while True:
                                                 # --[ 4. Ask from which account to transfer ]--
@@ -558,6 +607,41 @@ while True:
                                         case _:
                                             print('⚠️ \033[1mInvalid Choice!\033[0m Try again.')
 
+                            # Reactivate Account
+                            case '4':
+                                if customer.is_active:
+                                    print("✅ Your account is already active!")
+                                    print(f"- Current overdraft count: {customer.overdraft_count}")
+                                else:
+                                    print(f"\n---- Reactivate Account ----")
+                                    print(f"🔹 Overdraft count: {customer.overdraft_count}")
+                                    print(f"🔹 Total overdraft fees: ${customer.overdraft_count * customer.overdraft_fee:.2f}")
+                                    
+                                    # calculate required amount
+                                    checking_balance = customer.balance_checking or 0
+                                    
+                                    if checking_balance < 0:
+                                        balance_to_cover = -checking_balance  # convert nigative to positive
+                                        print(f"🔹 Negative balance to cover: ${balance_to_cover:.2f}")
+                                    else:
+                                        balance_to_cover = 0
+                                        print("✅ No negative balance to cover")
+                                    
+                                    overdraft_fees = customer.overdraft_count * customer.overdraft_fee
+                                    total_required = balance_to_cover + overdraft_fees
+                                    
+                                    print(f"🔹 Overdraft fees: ${overdraft_fees:.2f}")
+                                    print(f"🔹 \033[1mTotal required to reactivate\033[0m: ${total_required:.2f}")
+                                    while True:
+                                        try:
+                                            user_reactivate_amount = float(input("- Enter payment amount: $"))
+                                            success, message = account.reactivate(user_reactivate_amount, bank_management)
+                                            print(message)
+                                            if success:
+                                                bank_management.save_all_customers()
+                                            break
+                                        except ValueError:
+                                            print("⚠️ Invalid amount!")
                             # Exit
                             case '0':
                                 print('\n \033[1m-----------------------------------------------------------\033[0m')
